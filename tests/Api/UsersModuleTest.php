@@ -37,7 +37,7 @@ class UsersModuleTest extends TestCase
         );
         $this->storage->setDateTime(new DateTime('2018-01-01 01:00:00'));
         $this->storage->init();
-        $this->storage->addCertificate('foo', 'abcd1234', 'ABCD1234', new DateTime('@12345678'), new DateTime('@23456789'), null);
+        $this->storage->addCertificate('foo', 'internet', 'abcd1234', 'ABCD1234', new DateTime('@12345678'), new DateTime('@23456789'), null);
         $this->storage->disableUser('bar');
         $this->storage->disableUser('baz');
         $this->storage->enableUser('baz');

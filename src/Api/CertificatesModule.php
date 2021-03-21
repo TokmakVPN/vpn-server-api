@@ -65,6 +65,7 @@ class CertificatesModule implements ServiceModuleInterface
                 AuthUtils::requireUser($hookData, ['vpn-user-portal']);
 
                 $userId = InputValidation::userId($request->requirePostParameter('user_id'));
+				$profileId = InputValidation::profileId($request->requirePostParameter('profile_id'));
                 $displayName = InputValidation::displayName($request->requirePostParameter('display_name'));
                 if (null !== $clientId = $request->optionalPostParameter('client_id')) {
                     $clientId = InputValidation::clientId($clientId);
@@ -75,9 +76,11 @@ class CertificatesModule implements ServiceModuleInterface
                 // generate a random string as the certificate's CN
                 $commonName = $this->random->get(16);
                 $certInfo = $this->ca->clientCert($commonName, $expiresAt);
+				$certInfo['tls_crypt_v2'] = $this->ca->clientKey($profileId, $userId);
 
                 $this->storage->addCertificate(
                     $userId,
+					$profileId,
                     $commonName,
                     $displayName,
                     new DateTime(sprintf('@%d', $certInfo['valid_from'])),
@@ -132,6 +135,7 @@ class CertificatesModule implements ServiceModuleInterface
                 $certInfo = $this->ca->serverCert($serverName);
                 $certInfo['tls_crypt'] = $this->tlsCrypt->get($profileId);
                 $certInfo['ca'] = $this->ca->caCert();
+				$certInfo['tls_crypt_v2'] = $this->ca->serverKey($profileId);
 
                 return new ApiResponse('add_server_certificate', $certInfo, 201);
             }
@@ -157,6 +161,7 @@ class CertificatesModule implements ServiceModuleInterface
                 );
 
                 $this->storage->deleteCertificate($commonName);
+				$this->ca->deleteKeyClient($certInfo['profile_id'],$certInfo['user_id']);
 
                 return new ApiResponse('delete_client_certificate');
             }

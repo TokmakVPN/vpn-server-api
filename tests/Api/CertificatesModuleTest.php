@@ -66,13 +66,14 @@ class CertificatesModuleTest extends TestCase
                 'private_key' => 'ClientKey for random_1',
                 'valid_from' => 1234567890,
                 'valid_to' => 2345678901,
+				'tls_crypt_v2' => 'Clientkey tls-v2',
             ],
             $this->makeRequest(
                 ['vpn-user-portal', 'abcdef'],
                 'POST',
                 'add_client_certificate',
                 [],
-                ['user_id' => 'foo', 'display_name' => 'bar', 'expires_at' => $expiresAt->format(DateTime::ATOM)]
+                ['user_id' => 'foo', 'profile_id' => 'internet', 'display_name' => 'bar', 'expires_at' => $expiresAt->format(DateTime::ATOM)]
             )
         );
     }
@@ -124,6 +125,7 @@ EOF;
                 'valid_to' => 2345678901,
                 'tls_crypt' => $testKey,
                 'ca' => 'Ca',
+				'tls_crypt_v2' => 'Serverkey tls-v2',
             ],
             $this->makeRequest(
                 ['vpn-server-node', 'aabbcc'],

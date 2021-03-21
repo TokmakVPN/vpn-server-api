@@ -37,8 +37,8 @@ class OpenVpnModuleTest extends TestCase
         );
         $storage->init();
 
-        $storage->addCertificate('foo', 'f3bb6f8efb4dc64be35e1044cf1b5e76', 'Display Name', new DateTime('@12345678'), new DateTime('@23456789'), null);
-        $storage->addCertificate('foo', '78f4a3c26062a434b01892e2b23126d1', 'Display Name 2', new DateTime('@12345678'), new DateTime('@23456789'), null);
+        $storage->addCertificate('foo', 'internet', 'f3bb6f8efb4dc64be35e1044cf1b5e76', 'Display Name', new DateTime('@12345678'), new DateTime('@23456789'), null);
+        $storage->addCertificate('foo', 'internet', '78f4a3c26062a434b01892e2b23126d1', 'Display Name 2', new DateTime('@12345678'), new DateTime('@23456789'), null);
 
         $serverManager = new ServerManager(
             $config,
@@ -80,6 +80,7 @@ class OpenVpnModuleTest extends TestCase
                         'valid_from' => '1970-05-23T21:21:18+00:00',
                         'valid_to' => '1970-09-29T11:46:29+00:00',
                         'client_id' => null,
+						'profile_id' => 'internet',
                     ],
                     [
                         'common_name' => '78f4a3c26062a434b01892e2b23126d1',
@@ -93,6 +94,7 @@ class OpenVpnModuleTest extends TestCase
                         'valid_from' => '1970-05-23T21:21:18+00:00',
                         'valid_to' => '1970-09-29T11:46:29+00:00',
                         'client_id' => null,
+						'profile_id' => 'internet',
                     ],
                 ],
             ],

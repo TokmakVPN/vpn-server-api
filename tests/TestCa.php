@@ -50,6 +50,31 @@ class TestCa implements CaInterface
             'valid_to' => $expiresAt->getTimestamp(),
         ];
     }
+	
+	/**
+     * Generate a key tls-crypt-v2 for a VPN server.
+     *
+     * @param string $serverName
+     *
+     * @return string the tls-crypt-v2-server in PEM format
+     */
+	public function serverKey($profileId) 
+	{
+		return 'Serverkey tls-v2';
+	}
+
+	/**
+     * Generate a key tls-crypt-v2 for a VPN client.
+     *
+     * @param string $profileId
+	 * @param string $userId
+     *
+     * @return string the tls-crypt-v2-client in PEM format
+     */
+	public function clientKey($profileId, $userId) 
+	{
+		return 'Clientkey tls-v2';
+	}
 
     /**
      * Get the CA root certificate.

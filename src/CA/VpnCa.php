@@ -91,6 +91,44 @@ class VpnCa implements CaInterface
         return $this->certInfo($commonName);
     }
 
+	/**
+     * Generate a key tls-crypt-v2 for a VPN server.
+     *
+     * @param string $serverName
+     *
+     * @return string the tls-crypt-v2-server in PEM format
+     */
+	public function serverKey($profileId) 
+	{
+		self::exec(sprintf('openvpn --genkey tls-crypt-v2-server %s/%s-tls-crypt-v2-server.key', $this->caDir, $profileId));
+		return $this->keyInfoServer($profileId);
+	}
+
+	/**
+     * Generate a key tls-crypt-v2 for a VPN client.
+     *
+     * @param string $profileId
+	 * @param string $userId
+     *
+     * @return string the tls-crypt-v2-client in PEM format
+     */
+	public function clientKey($profileId, $userId) 
+	{
+		self::exec(sprintf('openvpn --genkey tls-crypt-v2-client %s/%s-%s-tls-crypt-v2-client.key --tls-crypt-v2 %s/%s-tls-crypt-v2-server.key', $this->caDir, $profileId, $userId, $this->caDir, $profileId));
+		return $this->keyInfoClient($profileId, $userId);
+	}
+	
+		/**
+     * Remove a key tls-crypt-v2 for a VPN client.
+     *
+     * @param string $profileId
+	 * @param string $userId
+     */
+	public function deleteKeyClient($profileId, $userId) 
+	{
+		self::delete(sprintf('%s/%s-%s-tls-crypt-v2-client.key', $this->caDir, $profileId, $userId));
+	}
+
     /**
      * @return bool
      */
@@ -153,6 +191,35 @@ class VpnCa implements CaInterface
 
         return $certKeyInfo;
     }
+	
+	/**
+     * @param string $serverName
+     *
+     * @return string
+     */
+    private function KeyInfoServer($profileId)
+    {
+        $TlsKeyInfo = $this->TlsKeyInfo(
+            sprintf('%s/%s-tls-crypt-v2-server.key', $this->caDir, $profileId)
+        );
+
+        return $TlsKeyInfo;
+    }
+	
+	/**
+     * @param string $profileId
+	 * @param string $userId
+     *
+     * @return string
+     */
+    private function KeyInfoClient($profileId, $userId)
+    {
+        $TlsKeyInfo = $this->TlsKeyInfo(
+            sprintf('%s/%s-%s-tls-crypt-v2-client.key', $this->caDir, $profileId, $userId)
+        );
+
+        return $TlsKeyInfo;
+    }
 
     /**
      * @param string $certFile
@@ -172,6 +239,18 @@ class VpnCa implements CaInterface
             'valid_from' => $parsedCert['validFrom_time_t'],
             'valid_to' => $parsedCert['validTo_time_t'],
         ];
+    }
+	
+	/**
+     * @param string $keyFile
+     *
+     * @return string
+     */
+    private function TlsKeyInfo($keyFile)
+    {
+        $keyData = $this->readKey($keyFile);
+
+        return $keyData;
     }
 
     /**

@@ -29,6 +29,7 @@ class StorageTest extends TestCase
         $this->storage->init();
         $this->storage->addCertificate(
             'user_id',
+			'profile_id',
             'common_name',
             'display_name',
             new DateTime('2018-01-01 00:00:00'),
@@ -37,6 +38,7 @@ class StorageTest extends TestCase
         );
         $this->storage->addCertificate(
             'other_user_id',
+			'other_profile_id',
             'other_common_name',
             'other_display_name',
             new DateTime('2018-01-01 00:00:00'),

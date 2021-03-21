@@ -170,7 +170,8 @@ SQL
         c.display_name AS display_name,
         c.valid_from,
         c.valid_to,
-        c.client_id
+        c.client_id,
+		c.profile_id
     FROM
         users u, certificates c
     WHERE
@@ -240,18 +241,19 @@ SQL
      *
      * @return void
      */
-    public function addCertificate($userId, $commonName, $displayName, DateTime $validFrom, DateTime $validTo, $clientId)
+    public function addCertificate($userId, $profileId, $commonName, $displayName, DateTime $validFrom, DateTime $validTo, $clientId)
     {
         $this->addUser($userId);
         $stmt = $this->db->prepare(
 <<< 'SQL'
     INSERT INTO certificates
-        (common_name, user_id, display_name, valid_from, valid_to, client_id)
+        (common_name, profile_id, user_id, display_name, valid_from, valid_to, client_id)
     VALUES
-        (:common_name, :user_id, :display_name, :valid_from, :valid_to, :client_id)
+        (:common_name, :profile_id, :user_id, :display_name, :valid_from, :valid_to, :client_id)
 SQL
         );
         $stmt->bindValue(':common_name', $commonName, PDO::PARAM_STR);
+		$stmt->bindValue(':profile_id', $profileId, PDO::PARAM_STR);
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_STR);
         $stmt->bindValue(':display_name', $displayName, PDO::PARAM_STR);
         $stmt->bindValue(':valid_from', $validFrom->format(DateTime::ATOM), PDO::PARAM_STR);
@@ -271,6 +273,7 @@ SQL
         $stmt = $this->db->prepare(
 <<< 'SQL'
     SELECT
+		profile_id,
         common_name,
         display_name,
         valid_from,
