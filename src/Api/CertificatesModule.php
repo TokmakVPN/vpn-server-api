@@ -133,7 +133,7 @@ class CertificatesModule implements ServiceModuleInterface
                 $profileConfig = new ProfileConfig($this->config->s('vpnProfiles')->s($profileId));
                 $serverName = $profileConfig->hostName();
                 $certInfo = $this->ca->serverCert($serverName);
-                $certInfo['tls_crypt'] = $this->tlsCrypt->get($profileId);
+                $certInfo['tls_crypt'] = $this->tlsCrypt->get($profileId, true);
                 $certInfo['ca'] = $this->ca->caCert();
 				$certInfo['tls_crypt_v2'] = $this->ca->serverKey($profileId);
 
