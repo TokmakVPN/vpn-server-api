@@ -40,6 +40,10 @@ return [
             // Block access to local LAN when VPN is active
             // DEFAULT = false
             'blockLan' => true,
+			
+			// active mode stunnel
+            // DEFAULT = false
+            'enableStunnel' => true,
 
             // IPv4 and IPv6 routes to push to the client, only used when
             // defaultGateway is false
