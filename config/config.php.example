@@ -27,7 +27,7 @@ return [
 
             // The address the OpenVPN processes will listen on
             // DEFAULT = '::'
-            'listen' => '::',
+            'listen' => 'localhost',
 
             // The IP address to use for connecting to OpenVPN processes
             // DEFAULT = '127.0.0.1'
@@ -79,7 +79,7 @@ return [
             // be either 1, 2, 4, 8 or 16 proto/port combinations
             // DEFAULT = ['udp/1194', 'tcp/1194']
             'vpnProtoPorts' => [
-                'udp/1194',
+                //'udp/1194',
                 'tcp/1194',
             ],
 
@@ -101,6 +101,20 @@ return [
             // DEFAULT = tls-crypt
             'tlsProtection' => 'tls-crypt',
             //'tlsProtection' => false,
+			
+			// Protect to TLS control channel with PSK
+            // DEFAULT = tls-crypt
+            'AddonConfigServer' => [
+			'tun-mtu 1400',
+			'tun-mtu-extra 32',
+			'mssfix 1350'
+			],
+			
+			'AddonConfigClient' => [
+			'tun-mtu 1400',
+			'tun-mtu-extra 32',
+			'mssfix 1350'
+			]
         ],
     ],
 

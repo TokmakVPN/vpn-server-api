@@ -155,6 +155,10 @@ class ConnectionsModule implements ServiceModuleInterface
         if ($userCertInfo['user_is_disabled']) {
             throw new ConnectionsModuleException($userId, 'unable to connect, account is disabled');
         }
+		
+		if ($userCertInfo['user_connected']) {
+			throw new ConnectionsModuleException($userId, 'You are already connected from another device');
+		}
 
         $this->verifyAcl($profileId, $userId);
     }

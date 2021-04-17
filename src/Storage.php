@@ -18,7 +18,7 @@ use PDO;
 
 class Storage implements OtpStorageInterface
 {
-    const CURRENT_SCHEMA_VERSION = '2019032701';
+    const CURRENT_SCHEMA_VERSION = '2021041701';
 
     /** @var \PDO */
     private $db;
@@ -167,6 +167,7 @@ SQL
     SELECT
         u.user_id AS user_id,
         u.is_disabled AS user_is_disabled,
+		u.connected AS user_connected,
         c.display_name AS display_name,
         c.valid_from,
         c.valid_to,
@@ -479,12 +480,26 @@ SQL
         )
 SQL
         );
-
+		
         $stmt->bindValue(':profile_id', $profileId, PDO::PARAM_STR);
         $stmt->bindValue(':common_name', $commonName, PDO::PARAM_STR);
         $stmt->bindValue(':ip4', $ip4, PDO::PARAM_STR);
         $stmt->bindValue(':ip6', $ip6, PDO::PARAM_STR);
         $stmt->bindValue(':connected_at', $connectedAt->format(DateTime::ATOM), PDO::PARAM_STR);
+        $stmt->execute();
+		
+		
+		$stmt = $this->db->prepare(
+<<< 'SQL'
+        UPDATE
+            users
+        SET
+            connected = 1
+        WHERE
+            user_id = (SELECT user_id FROM certificates where common_name = :common_name)
+SQL
+        );
+        $stmt->bindValue(':common_name', $commonName, PDO::PARAM_STR);
         $stmt->execute();
     }
 
@@ -526,6 +541,19 @@ SQL
         $stmt->bindValue(':connected_at', $connectedAt->format(DateTime::ATOM), PDO::PARAM_STR);
         $stmt->bindValue(':disconnected_at', $disconnectedAt->format(DateTime::ATOM), PDO::PARAM_STR);
         $stmt->bindValue(':bytes_transferred', $bytesTransferred, PDO::PARAM_INT);
+        $stmt->execute();
+		
+		$stmt = $this->db->prepare(
+<<< 'SQL'
+        UPDATE
+            users
+        SET
+            connected = 0
+    WHERE
+        user_id = (SELECT user_id FROM certificates WHERE common_name = :common_name)
+SQL
+        );
+        $stmt->bindValue(':common_name', $commonName, PDO::PARAM_STR);
         $stmt->execute();
     }
 

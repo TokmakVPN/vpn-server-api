@@ -100,6 +100,10 @@ class VpnCa implements CaInterface
      */
 	public function serverKey($profileId) 
 	{
+		$globalTlsCryptv2Key = sprintf('%s/tls-crypt-v2-server.key', $this->caDir);
+        if (@file_exists($globalTlsCryptv2Key)) {
+            return FileIO::readFile($globalTlsCryptv2Key);
+        }
 		self::exec(sprintf('openvpn --genkey tls-crypt-v2-server %s/%s-tls-crypt-v2-server.key', $this->caDir, $profileId));
 		return $this->keyInfoServer($profileId);
 	}
@@ -114,7 +118,12 @@ class VpnCa implements CaInterface
      */
 	public function clientKey($profileId, $userId) 
 	{
-		self::exec(sprintf('openvpn --genkey tls-crypt-v2-client %s/%s-%s-tls-crypt-v2-client.key --tls-crypt-v2 %s/%s-tls-crypt-v2-server.key', $this->caDir, $profileId, $userId, $this->caDir, $profileId));
+		$globalTlsCryptv2Key = sprintf('%s/tls-crypt-v2-server.key', $this->caDir);
+        if (@file_exists($globalTlsCryptv2Key)) {
+            self::exec(sprintf('openvpn --genkey tls-crypt-v2-client %s/%s-tls-crypt-v2-client.key --tls-crypt-v2 %s/tls-crypt-v2-server.key', $this->caDir, $userId, $this->caDir));
+        } else {
+			self::exec(sprintf('openvpn --genkey tls-crypt-v2-client %s/%s-%s-tls-crypt-v2-client.key --tls-crypt-v2 %s/%s-tls-crypt-v2-server.key', $this->caDir, $profileId, $userId, $this->caDir, $profileId));
+		}
 		return $this->keyInfoClient($profileId, $userId);
 	}
 	
@@ -126,6 +135,7 @@ class VpnCa implements CaInterface
      */
 	public function deleteKeyClient($profileId, $userId) 
 	{
+		self::delete(sprintf('%s/%s-tls-crypt-v2-client.key', $this->caDir, $userId));
 		self::delete(sprintf('%s/%s-%s-tls-crypt-v2-client.key', $this->caDir, $profileId, $userId));
 	}
 
@@ -214,9 +224,16 @@ class VpnCa implements CaInterface
      */
     private function KeyInfoClient($profileId, $userId)
     {
+		$globalTlsCryptv2Key = sprintf('%s/tls-v2.key', $this->caDir);
+        if (@file_exists($globalTlsCryptv2Key)) {
+		$TlsKeyInfo = $this->TlsKeyInfo(
+            sprintf('%s/%s-tls-crypt-v2-client.key', $this->caDir, $userId)
+        );
+		} else {
         $TlsKeyInfo = $this->TlsKeyInfo(
             sprintf('%s/%s-%s-tls-crypt-v2-client.key', $this->caDir, $profileId, $userId)
         );
+		}
 
         return $TlsKeyInfo;
     }

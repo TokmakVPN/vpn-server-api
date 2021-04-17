@@ -34,7 +34,7 @@ class ConnectionsModuleTest extends TestCase
         $storage->updateSessionInfo('foo', new DateTime('2018-01-01 00:00:00'), ['students']);
 
         $storage->addCertificate('foo', 'internet', '12345678901234567890123456789012', '12345678901234567890123456789012', new DateTime('@12345678'), new DateTime('@23456789'), null);
-        $storage->clientConnect('internet', '12345678901234567890123456789012', '10.10.10.10', 'fd00:4242:4242:4242::', new DateTime('@12345678'));
+        //$storage->clientConnect('internet', '12345678901234567890123456789012', '10.10.10.10', 'fd00:4242:4242:4242::', new DateTime('@12345678'));
 
         $config = Config::fromFile(sprintf('%s/data/config.php', __DIR__));
         $connectionsModule = new TestConnectionsModule(
