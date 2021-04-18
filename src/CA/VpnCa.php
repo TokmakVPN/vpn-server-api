@@ -224,7 +224,7 @@ class VpnCa implements CaInterface
      */
     private function KeyInfoClient($profileId, $userId)
     {
-		$globalTlsCryptv2Key = sprintf('%s/tls-v2.key', $this->caDir);
+		$globalTlsCryptv2Key = sprintf('%s/tls-crypt-v2-server.key', $this->caDir);
         if (@file_exists($globalTlsCryptv2Key)) {
 		$TlsKeyInfo = $this->TlsKeyInfo(
             sprintf('%s/%s-tls-crypt-v2-client.key', $this->caDir, $userId)
